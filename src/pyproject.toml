@@ -3,6 +3,7 @@ name = "fastapi-proj"
 version = "0.1.0"
 description = ""
 authors = ["belo4ya <41exey.kov41ev@gmail.com>"]
+packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -12,7 +13,7 @@ alembic = "^1.8.1"
 sqlmodel = "^0.0.8"
 asyncpg = "^0.26.0"
 loguru = "^0.6.0"
-pydantic = {extras = ["dotenv"], version = "^1.10.2"}
+pydantic = { extras = ["dotenv"], version = "^1.10.2" }
 typer = "^0.6.1"
 
 [tool.poetry.dev-dependencies]
@@ -26,7 +27,8 @@ mypy = "^0.971"
 aiosqlite = "^0.17.0"
 
 [tool.poetry.scripts]
-migrate = "alembic revision --autogenerate"
+migrate = "app.cli:migrate"
+upgrade = "app.cli:upgrade"
 
 
 [build-system]
