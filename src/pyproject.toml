@@ -26,6 +26,8 @@ black = "^22.8.0"
 isort = "^5.10.1"
 bandit = "^1.7.4"
 mypy = "^0.971"
+pytest-cov = "^3.0.0"
+sqlalchemy-stubs = "^0.4"
 
 [tool.poetry.scripts]
 migrate = "app.cli:migrate"
