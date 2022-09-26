@@ -1,7 +1,13 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+from functools import lru_cache
 
-from app.core.db import get_session as _get_session
+from fastapi import Depends
+
+from app.core.db import get_session as _get_session, SessionT
+from app.domain import repositories as repos
+
+get_session = _get_session  # TODO: как из тебя достать объект session?
 
 
-async def get_session() -> AsyncSession:
-    return _get_session()
+@lru_cache
+def get_projects_repo(session: SessionT = Depends(get_session)) -> repos.ProjectsRepository:
+    return repos.ProjectsRepository(session)

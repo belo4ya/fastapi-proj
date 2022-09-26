@@ -1,11 +1,19 @@
 from datetime import datetime
 
-from pydantic import BaseModel, constr
+from pydantic import BaseModel
 
 
-class ProjectOut(BaseModel):
-    id: int
-    tag: constr(to_upper=True)
+class ProjectBase(BaseModel):
+    tag: str
     name: str
+    status: str = 'active'
     start_date: datetime | None = None
     end_date: datetime | None = None
+
+
+class ProjectCreate(ProjectBase):
+    pass
+
+
+class ProjectRead(ProjectBase):
+    id: int

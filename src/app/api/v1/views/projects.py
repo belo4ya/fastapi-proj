@@ -1,32 +1,27 @@
-from datetime import datetime
+from fastapi import APIRouter, Depends
 
-from fastapi import APIRouter
-
+from app.api.deps import get_projects_repo, get_session
 from app.api.v1 import schemas
+from app.core.db import SessionT
+from app.domain import models
+from app.domain import repositories as repos
 
 router = APIRouter(prefix='/projects', tags=['projects'])
 
-projects = [
-    schemas.ProjectOut(
-        id=0,
-        tag='ABC',
-        name='Проект #1'
-    ),
-    schemas.ProjectOut(
-        id=1,
-        tag='QWE',
-        name='Проект #2',
-        start_date=datetime(2022, 9, 25)
-    ),
-    schemas.ProjectOut(
-        id=2,
-        tag='ZXC',
-        name='Проект #3',
-        start_date=datetime(2022, 9, 25),
-        end_date=datetime(2024, 9, 25)),
-]
+
+@router.get('', response_model=list[schemas.ProjectRead])
+async def get_projects_view(
+        repo: repos.ProjectsRepository = Depends(get_projects_repo)
+):
+    return await repo.get_all()
 
 
-@router.get('', response_model=list[schemas.ProjectOut])
-async def get_projects_view():
-    return projects
+@router.post('', response_model=schemas.ProjectRead)
+async def create_project_view(
+        data: schemas.ProjectCreate,
+        session: SessionT = Depends(get_session),
+        repo: repos.ProjectsRepository = Depends(get_projects_repo)
+):
+    project = models.Project.from_orm(data)
+    async with session.begin():
+        return await repo.save(project)
