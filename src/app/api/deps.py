@@ -9,5 +9,7 @@ get_session = _get_session  # TODO: как из тебя достать объе
 
 
 @lru_cache
-def get_projects_repo(session: SessionT = Depends(get_session)) -> repos.ProjectsRepository:
+def get_projects_repo(
+    session: SessionT = Depends(get_session),
+) -> repos.ProjectsRepository:
     return repos.ProjectsRepository(session)

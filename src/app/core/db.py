@@ -47,19 +47,19 @@ class TimestampMixin(SQLModel):
 
 class _SoftDeleteMixin:
     __config__ = None
-    deleted = sa.Column('deleted', sa.Boolean, default=False, nullable=False)
+    deleted = sa.Column("deleted", sa.Boolean, default=False, nullable=False)
 
 
 class SoftDeleteMixin(SQLModel, _SoftDeleteMixin):
     pass
 
 
-@sa.event.listens_for(Session, 'do_orm_execute')
+@sa.event.listens_for(Session, "do_orm_execute")
 def _add_filtering_criteria(execute_state: ORMExecuteState):
     if (
-            not execute_state.is_column_load
-            and not execute_state.is_relationship_load
-            and not execute_state.execution_options.get('with_deleted', False)
+        not execute_state.is_column_load
+        and not execute_state.is_relationship_load
+        and not execute_state.execution_options.get("with_deleted", False)
     ):
         execute_state.statement = execute_state.statement.options(
             with_loader_criteria(

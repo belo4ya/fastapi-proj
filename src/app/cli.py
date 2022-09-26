@@ -7,7 +7,7 @@ app = typer.Typer()
 
 
 def get_alembic_config() -> config.Config:
-    return config.Config(str(Path(__file__).parent.parent / 'alembic.ini'))
+    return config.Config(str(Path(__file__).parent.parent / "alembic.ini"))
 
 
 @app.command()
@@ -17,7 +17,7 @@ def migrate(message: str | None = None):
 
 
 @app.command()
-def upgrade(revision: str = 'head'):
+def upgrade(revision: str = "head"):
     """Alias for 'alembic upgrade <revision>'"""
     command.upgrade(get_alembic_config(), revision=revision)
 

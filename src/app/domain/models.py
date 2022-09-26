@@ -6,9 +6,9 @@ from sqlmodel import SQLModel, Field, Relationship
 from app.core.db import SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin
 
 __all__ = [
-    'Employee',
-    'Project',
-    'EmployeeProjectLink',
+    "Employee",
+    "Project",
+    "EmployeeProjectLink",
 ]
 
 
@@ -19,13 +19,13 @@ class Employee(SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin, table=True):
 
     manager_id: int | None = Field(default=None, foreign_key="employee.id")
 
-    manager: t.Optional['Employee'] = Relationship(
+    manager: t.Optional["Employee"] = Relationship(
         back_populates="employees",
         sa_relationship_kwargs=dict(remote_side="Employee.id"),
     )
-    employees: list['Employee'] = Relationship(back_populates="manager")
+    employees: list["Employee"] = Relationship(back_populates="manager")
 
-    projects: list['EmployeeProjectLink'] = Relationship(back_populates="employee")
+    projects: list["EmployeeProjectLink"] = Relationship(back_populates="employee")
 
 
 class Project(SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin, table=True):
@@ -35,7 +35,7 @@ class Project(SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin, table=True):
     start_date: datetime | None = None
     end_date: datetime | None = None
 
-    resources: list['EmployeeProjectLink'] = Relationship(back_populates="project")
+    resources: list["EmployeeProjectLink"] = Relationship(back_populates="project")
 
 
 class EmployeeProjectLink(SQLModel, table=True):
