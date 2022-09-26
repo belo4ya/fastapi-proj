@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import sqlalchemy as sa
+from pydantic import BaseConfig
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, ORMExecuteState, Session, with_loader_criteria
 from sqlmodel import SQLModel, Field
@@ -12,14 +13,9 @@ engine = create_async_engine(
     echo=False,
     future=True,
 )
-async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
+async_session_factory = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 SessionT = AsyncSession | Session
-
-
-async def get_session() -> SessionT:
-    async with async_session() as session:
-        yield session
 
 
 class SurrogateKeyMixin(SQLModel):
@@ -46,8 +42,8 @@ class TimestampMixin(SQLModel):
 
 
 class _SoftDeleteMixin:
-    __config__ = None
-    deleted = sa.Column("deleted", sa.Boolean, default=False, nullable=False)
+    __config__: BaseConfig | None = None
+    deleted: bool = sa.Column("deleted", sa.Boolean, default=False, nullable=False)
 
 
 class SoftDeleteMixin(SQLModel, _SoftDeleteMixin):
