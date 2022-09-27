@@ -6,7 +6,7 @@ from app.api.v1.models import ProjectResourceLink
 from app.core.db import SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin
 
 if t.TYPE_CHECKING:
-    from app.api.v1.projects.models import Project
+    from app.api.v1.projects.models import Project as _Project
 
 __all__ = [
     "Employee",
@@ -23,6 +23,13 @@ class Employee(SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin, table=True):
         back_populates="employees",
         sa_relationship_kwargs=dict(remote_side="Employee.id"),
     )
-    employees: list["Employee"] = Relationship(back_populates="manager")
+    employees: list["Employee"] = Relationship(
+        back_populates="manager",
+        sa_relationship_kwargs=dict(lazy="selectin"),
+    )
 
-    projects: list["Project"] = Relationship(back_populates="resources", link_model=ProjectResourceLink)
+    projects: list["_Project"] = Relationship(
+        back_populates="resources",
+        link_model=ProjectResourceLink,
+        sa_relationship_kwargs=dict(lazy="selectin"),
+    )

@@ -5,6 +5,7 @@ from fastapi import Depends
 
 from app.api.v1.constants import Prefixes, Tags
 from app.api.v1.dependencies import get_session
+from app.api.v1.employees.services import get_employees_by_ids
 from app.api.v1.exceptions import raise_404 as _raise_404
 from app.api.v1.projects import models
 from app.api.v1.projects import schemas
@@ -51,7 +52,7 @@ async def create_project(
         new_data = data.dict()
         if data.resources:
             resources_ids = [resource.id for resource in data.resources]
-            new_data["resources"] = await services.get_resources_by_ids(session, resources_ids)
+            new_data["resources"] = await get_employees_by_ids(session, resources_ids)
 
         project = models.Project(**new_data)
         return await crud.save(project)
@@ -72,7 +73,7 @@ async def update_project(
         new_data = data.dict(exclude_unset=True)
         if "resources" in new_data:
             resources_ids = [resource.id for resource in data.resources]
-            new_data["resources"] = await services.get_resources_by_ids(session, resources_ids)
+            new_data["resources"] = await get_employees_by_ids(session, resources_ids)
 
         for attr, value in new_data.items():
             setattr(project, attr, value)
