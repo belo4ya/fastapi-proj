@@ -27,10 +27,18 @@ class CRUD(t.Generic[_M]):
         stmt = sql.select(self.model_cls).where(self.model_cls.id == id_)
         return await self.session.scalar(stmt, execution_options=exec_opts)
 
-    async def get_all(self, offset: int = None, limit: int = None, _with_deleted: bool = False) -> list[_M]:
+    async def get_all(self, _with_deleted: bool = False) -> list[_M]:
+        exec_opts = {"with_deleted": _with_deleted}
+        stmt = sql.select(self.model_cls)
+        return (await self.session.scalars(stmt, execution_options=exec_opts)).all()
+
+    async def get_all_paginate(
+        self, offset: int = None, limit: int = None, _with_deleted: bool = False
+    ) -> tuple[list[_M], int]:
         exec_opts = {"with_deleted": _with_deleted}
         stmt = sql.select(self.model_cls).offset(offset).limit(limit)
-        return (await self.session.scalars(stmt, execution_options=exec_opts)).all()
+        total = await self.session.scalar(sql.select(sql.func.count()).select_from(self.model_cls))
+        return (await self.session.scalars(stmt, execution_options=exec_opts)).all(), total
 
     async def delete(self, entity: _M, soft: bool = True) -> None:
         if soft:

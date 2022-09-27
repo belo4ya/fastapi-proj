@@ -2,6 +2,7 @@ import typing as t
 
 from fastapi import APIRouter, status
 from fastapi import Depends
+from pydantic import parse_obj_as
 
 from app.api.v1.constants import Prefixes, Tags
 from app.api.v1.dependencies import get_session, PaginationQuery, pagination_query
@@ -35,12 +36,18 @@ async def get_employee(
     return employee
 
 
-@router.get("", response_model=list[schemas.EmployeeRead])
+@router.get("", response_model=schemas.EmployeePagination)
 async def get_employees(
     page_q: PaginationQuery = Depends(pagination_query),
     crud: CRUD[models.Employee] = Depends(get_crud),
 ):
-    return await crud.get_all(offset=page_q.offset, limit=page_q.limit)
+    employees, total = await crud.get_all_paginate(offset=page_q.offset, limit=page_q.limit)
+    return schemas.EmployeePagination(
+        offset=page_q.offset,
+        limit=page_q.limit,
+        total=total,
+        results=parse_obj_as(list[schemas.EmployeeRead], employees),
+    )
 
 
 @router.post("", response_model=schemas.EmployeeRead, status_code=status.HTTP_201_CREATED)

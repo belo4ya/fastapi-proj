@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from app.api.v1.constants import ProjectStatuses
+from app.api.v1.schemas import PaginationSchema
 
 
 class EmployeeNestedID(BaseModel):
@@ -55,3 +56,7 @@ class EmployeeRead(EmployeeBase):
     manager_id: int | None = None
     employees: list[EmployeeNestedRead] = []
     projects: list[EmployeeProjectRead] = []
+
+
+class EmployeePagination(PaginationSchema[EmployeeRead]):
+    pass

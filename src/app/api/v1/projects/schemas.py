@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from app.api.v1.constants import ProjectStatuses
+from app.api.v1.schemas import PaginationSchema
 
 
 class ProjectResourceID(BaseModel):
@@ -39,3 +40,7 @@ class ProjectUpdate(ProjectBase):
 class ProjectRead(ProjectBase):
     id: int
     resources: list[ProjectResourceRead] = []
+
+
+class ProjectPagination(PaginationSchema[ProjectRead]):
+    pass

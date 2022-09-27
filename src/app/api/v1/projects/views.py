@@ -2,6 +2,7 @@ import typing as t
 
 from fastapi import APIRouter, status
 from fastapi import Depends
+from pydantic import parse_obj_as
 
 from app.api.v1.constants import Prefixes, Tags
 from app.api.v1.dependencies import get_session, PaginationQuery, pagination_query
@@ -35,12 +36,18 @@ async def get_project(
     return project
 
 
-@router.get("", response_model=list[schemas.ProjectRead])
+@router.get("", response_model=schemas.ProjectPagination)
 async def get_projects(
     page_q: PaginationQuery = Depends(pagination_query),
     crud: CRUD[models.Project] = Depends(get_crud),
 ):
-    return await crud.get_all(offset=page_q.offset, limit=page_q.limit)
+    projects, total = await crud.get_all_paginate(offset=page_q.offset, limit=page_q.limit)
+    return schemas.ProjectPagination(
+        offset=page_q.offset,
+        limit=page_q.limit,
+        total=total,
+        results=parse_obj_as(list[schemas.ProjectRead], projects),
+    )
 
 
 @router.post("", response_model=schemas.ProjectRead, status_code=status.HTTP_201_CREATED)
