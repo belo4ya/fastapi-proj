@@ -14,7 +14,6 @@ class Employee(SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin, table=True):
     patronymic: str | None = None
 
     manager_id: int | None = Field(default=None, foreign_key="employee.id")
-
     manager: t.Optional["Employee"] = Relationship(
         back_populates="employees",
         sa_relationship_kwargs=dict(remote_side="Employee.id"),

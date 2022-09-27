@@ -64,8 +64,8 @@ async def update_project(
         raise_404(project_id)
 
     update_data = data.dict(exclude_unset=True, exclude_defaults=True)
-    for filed, value in update_data.items():
-        setattr(project, filed, value)
+    for attr, value in update_data.items():
+        setattr(project, attr, value)
 
     async with session.begin():
         return await crud.save(project)

@@ -3,6 +3,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from pydantic import BaseConfig
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import registry
 from sqlalchemy.orm import sessionmaker, ORMExecuteState, Session, with_loader_criteria
 from sqlmodel import SQLModel, Field
 
@@ -16,6 +17,8 @@ engine = create_async_engine(
 
 async_session_factory = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 SessionT = AsyncSession | Session
+
+mapper_registry = registry()
 
 
 class SurrogateKeyMixin(SQLModel):
