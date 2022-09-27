@@ -20,7 +20,7 @@ def raise_404(project_id: int) -> t.NoReturn:
 
 
 def get_crud(session: SessionT = Depends(get_session)) -> CRUD[models.Project]:
-    return CRUD(session, models.Project)
+    return services.get_crud(session)
 
 
 @router.get("/{project_id}", response_model=schemas.ProjectRead)
@@ -31,7 +31,6 @@ async def get_project(
     project = await crud.get_by_id(project_id)
     if not project:
         raise_404(project_id)
-
     return project
 
 
@@ -48,8 +47,13 @@ async def create_project(
     session: SessionT = Depends(get_session),
     crud: CRUD[models.Project] = Depends(get_crud),
 ):
-    project = models.Project.from_orm(data)
     async with session.begin():
+        new_data = data.dict()
+        if data.resources:
+            resources_ids = [resource.id for resource in data.resources]
+            new_data["resources"] = await services.get_resources_by_ids(session, resources_ids)
+
+        project = models.Project(**new_data)
         return await crud.save(project)
 
 
@@ -65,12 +69,12 @@ async def update_project(
         if not project:
             raise_404(project_id)
 
-        update_data = data.dict(exclude_unset=True)
-        if "resources" in update_data:
+        new_data = data.dict(exclude_unset=True)
+        if "resources" in new_data:
             resources_ids = [resource.id for resource in data.resources]
-            update_data["resources"] = await services.get_resources_by_ids(session, resources_ids)
+            new_data["resources"] = await services.get_resources_by_ids(session, resources_ids)
 
-        for attr, value in update_data.items():
+        for attr, value in new_data.items():
             setattr(project, attr, value)
 
         return await crud.save(project)
