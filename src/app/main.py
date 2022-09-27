@@ -7,8 +7,8 @@ from loguru import logger
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api import v1
-from app.settings import Settings, settings
 from app.models import *  # noqa: F401
+from app.settings import Settings, settings
 
 
 def create_app(conf: Settings) -> FastAPI:
@@ -22,7 +22,7 @@ def create_app(conf: Settings) -> FastAPI:
 
 
 def configure_logging(conf: Settings) -> None:
-    log_conf =                             copy.deepcopy(conf.LOGGING_CONFIG)
+    log_conf = copy.deepcopy(conf.LOGGING_CONFIG)
 
     if "handlers" in log_conf:
         sinks = {
