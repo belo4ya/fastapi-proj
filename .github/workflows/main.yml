@@ -29,6 +29,7 @@ jobs:
       - name: Black format
         uses: psf/black@stable
         with:
+          options: ""
           src: "./src/app"
       - name: Sort imports
         run: |
