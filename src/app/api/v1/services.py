@@ -24,12 +24,13 @@ class CRUD(t.Generic[_M]):
 
     async def get_by_id(self, id_: int, with_deleted: bool = False) -> _M | None:
         exec_opts = {"with_deleted": with_deleted}
-        return await self.session.get(self.model_cls, id_, execution_options=exec_opts)
+        stmt = sql.select(self.model_cls).where(self.model_cls.id == id_)
+        return await self.session.scalar(stmt, execution_options=exec_opts)
 
     async def get_all(self, with_deleted: bool = False) -> list[_M]:
         exec_opts = {"with_deleted": with_deleted}
-        stmt = sql.select(self.model_cls).execution_options(**exec_opts)
-        return (await self.session.scalars(stmt)).all()
+        stmt = sql.select(self.model_cls)
+        return (await self.session.scalars(stmt, execution_options=exec_opts)).all()
 
     async def delete(self, entity: _M, soft: bool = True) -> None:
         if soft:
@@ -45,5 +46,5 @@ class CRUD(t.Generic[_M]):
             stmt = sql.delete(self.model_cls)
 
         stmt = stmt.where(self.model_cls.id == id_)
-        res = await self.session.exec(stmt)
+        res = await self.session.execute(stmt)
         return res.rowcount > 0

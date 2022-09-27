@@ -52,22 +52,21 @@ async def create_project(
         return await crud.save(project)
 
 
-@router.put("/{project_id}", response_model=schemas.ProjectRead)
+@router.patch("/{project_id}", response_model=schemas.ProjectRead)
 async def update_project(
     project_id: int,
     data: schemas.ProjectUpdate,
     session: SessionT = Depends(get_session),
     crud: CRUD[models.Project] = Depends(get_crud),
 ):
-    project = await crud.get_by_id(project_id)
-    if not project:
-        raise_404(project_id)
-
-    update_data = data.dict(exclude_unset=True, exclude_defaults=True)
-    for attr, value in update_data.items():
-        setattr(project, attr, value)
-
     async with session.begin():
+        project = await crud.get_by_id(project_id)
+        if not project:
+            raise_404(project_id)
+
+        for attr, value in data.dict(exclude_unset=True).items():
+            setattr(project, attr, value)
+
         return await crud.save(project)
 
 

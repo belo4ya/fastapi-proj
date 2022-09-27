@@ -2,13 +2,19 @@ import typing as t
 
 from sqlmodel import Relationship, Field
 
+from app.api.v1.models import ProjectResourceLink
 from app.core.db import SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin
 
 if t.TYPE_CHECKING:
-    from app.api.v1.models import EmployeeProjectLink
+    from app.api.v1.projects.models import Project
+
+__all__ = [
+    "Employee",
+]
 
 
 class Employee(SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin, table=True):
+    id: int = Field(foreign_key="user.id", primary_key=True)
     first_name: str
     last_name: str
     patronymic: str | None = None
@@ -20,4 +26,4 @@ class Employee(SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin, table=True):
     )
     employees: list["Employee"] = Relationship(back_populates="manager")
 
-    projects: list["EmployeeProjectLink"] = Relationship(back_populates="employee")
+    projects: list["Project"] = Relationship(back_populates="resources", link_model=ProjectResourceLink)
