@@ -22,7 +22,7 @@ def create_app(conf: Settings) -> FastAPI:
 
 
 def configure_logging(conf: Settings) -> None:
-    log_conf = copy.deepcopy(conf.LOGGING_CONFIG)
+    log_conf =                             copy.deepcopy(conf.LOGGING_CONFIG)
 
     if "handlers" in log_conf:
         sinks = {
