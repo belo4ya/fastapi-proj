@@ -28,7 +28,7 @@ jobs:
           poetry install
       - name: Black format
         run: |
-          black ./app
+          poetry run black ./app
       - name: Test with pytest
         run: |
           poetry run pytest ./tests
