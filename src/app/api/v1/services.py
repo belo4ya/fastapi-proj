@@ -22,14 +22,14 @@ class CRUD(t.Generic[_M]):
         await self.session.flush()
         return entities
 
-    async def get_by_id(self, id_: int, with_deleted: bool = False) -> _M | None:
-        exec_opts = {"with_deleted": with_deleted}
+    async def get_by_id(self, id_: int, _with_deleted: bool = False) -> _M | None:
+        exec_opts = {"with_deleted": _with_deleted}
         stmt = sql.select(self.model_cls).where(self.model_cls.id == id_)
         return await self.session.scalar(stmt, execution_options=exec_opts)
 
-    async def get_all(self, with_deleted: bool = False) -> list[_M]:
-        exec_opts = {"with_deleted": with_deleted}
-        stmt = sql.select(self.model_cls)
+    async def get_all(self, offset: int = None, limit: int = None, _with_deleted: bool = False) -> list[_M]:
+        exec_opts = {"with_deleted": _with_deleted}
+        stmt = sql.select(self.model_cls).offset(offset).limit(limit)
         return (await self.session.scalars(stmt, execution_options=exec_opts)).all()
 
     async def delete(self, entity: _M, soft: bool = True) -> None:

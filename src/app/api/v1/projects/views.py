@@ -4,7 +4,7 @@ from fastapi import APIRouter, status
 from fastapi import Depends
 
 from app.api.v1.constants import Prefixes, Tags
-from app.api.v1.dependencies import get_session
+from app.api.v1.dependencies import get_session, PaginationQuery, pagination_query
 from app.api.v1.employees.services import get_employees_by_ids
 from app.api.v1.exceptions import raise_404 as _raise_404
 from app.api.v1.projects import models
@@ -37,9 +37,10 @@ async def get_project(
 
 @router.get("", response_model=list[schemas.ProjectRead])
 async def get_projects(
+    page_q: PaginationQuery = Depends(pagination_query),
     crud: CRUD[models.Project] = Depends(get_crud),
 ):
-    return await crud.get_all()
+    return await crud.get_all(offset=page_q.offset, limit=page_q.limit)
 
 
 @router.post("", response_model=schemas.ProjectRead, status_code=status.HTTP_201_CREATED)
