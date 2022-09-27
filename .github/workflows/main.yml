@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
+      - name: Black format
+        run: |
+          black ./app
       - name: Test with pytest
         run: |
-          poetry run pytest
+          poetry run pytest ./tests
