@@ -29,6 +29,9 @@ jobs:
       - name: Black format
         run: |
           poetry run black ./app
+      - name: Sort imports
+        run: |
+          poetry run isort ./app
       - name: Test with pytest
         run: |
           poetry run pytest ./tests
