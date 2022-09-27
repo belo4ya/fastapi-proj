@@ -27,8 +27,9 @@ jobs:
         run: |
           poetry install
       - name: Black format
-        run: |
-          poetry run black ./app
+        uses: psf/black@stable
+        with:
+          src: "./app"
       - name: Sort imports
         run: |
           poetry run isort ./app
