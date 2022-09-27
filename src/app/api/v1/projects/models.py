@@ -22,4 +22,13 @@ class Project(SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin, table=True):
     start_date: datetime | None = None
     end_date: datetime | None = None
 
-    resources: list["Employee"] = Relationship(back_populates="projects", link_model=ProjectResourceLink)
+    resources: list["Employee"] = Relationship(
+        back_populates="projects",
+        link_model=ProjectResourceLink,
+        # нужно для корректной работы:
+        # project.resources = ...
+        # https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html#synopsis-orm
+        # https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html#relationship-loading-techniques
+        # альтернатива - sql.select(Project).options(orm.selectinload(Project.resources))
+        sa_relationship_kwargs=dict(lazy="selectin"),
+    )

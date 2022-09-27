@@ -14,7 +14,6 @@ __all__ = [
 
 
 class Employee(SurrogateKeyMixin, SoftDeleteMixin, TimestampMixin, table=True):
-    id: int = Field(foreign_key="user.id", primary_key=True)
     first_name: str
     last_name: str
     patronymic: str | None = None

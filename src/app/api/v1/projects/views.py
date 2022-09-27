@@ -8,6 +8,7 @@ from app.api.v1.dependencies import get_session
 from app.api.v1.exceptions import raise_404 as _raise_404
 from app.api.v1.projects import models
 from app.api.v1.projects import schemas
+from app.api.v1.projects import services
 from app.api.v1.services import CRUD
 from app.core.db import SessionT
 
@@ -64,7 +65,12 @@ async def update_project(
         if not project:
             raise_404(project_id)
 
-        for attr, value in data.dict(exclude_unset=True).items():
+        update_data = data.dict(exclude_unset=True)
+        if "resources" in update_data:
+            resources_ids = [resource.id for resource in data.resources]
+            update_data["resources"] = await services.get_resources_by_ids(session, resources_ids)
+
+        for attr, value in update_data.items():
             setattr(project, attr, value)
 
         return await crud.save(project)
